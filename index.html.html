@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Data - Puskesos Kecamatan Margasari</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #57cc99;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f9fa;
+            --dark-color: #2d3436;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+        
+        .header-logo {
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+        
+        .card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), #2a9d8f);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #2a9d8f);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #164e63, #21867a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #38b000, #57cc99);
+            border: none;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9e00, #ffd166);
+            border: none;
+            color: #333;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef476f, #ff6b6b);
+            border: none;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #118ab2, #06d6a0);
+            border: none;
+        }
+        
+        .table th {
+            background-color: #e9f5f3;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-top: none;
+        }
+        
+        .table td {
+            vertical-align: middle;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--accent-color);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(87, 204, 153, 0.25);
+        }
+        
+        .form-section {
+            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .form-section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .badge-puskesos {
+            background: linear-gradient(135deg, #118ab2, #06d6a0);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .badge-sktm {
+            background: linear-gradient(135deg, #7209b7, #b5179e);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        
+        .data-count {
+            background: linear-gradient(135deg, #e9f5f3, #ffffff);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .surat-preview {
+            border: 1px solid #ddd;
+            padding: 40px;
+            min-height: 1123px;
+            width: 794px;
+            background-color: white;
+            font-family: 'Times New Roman', serif;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        
+        .kop-surat {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .judul-surat {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            text-decoration: underline;
+            font-size: 14pt;
+        }
+        
+        .isi-surat {
+            line-height: 1.8;
+            font-size: 12pt;
+            text-align: justify;
+        }
+        
+        .ttd-section {
+            margin-top: 100px;
+            text-align: right;
+            margin-right: 100px;
+        }
+        
+        .ttd-nama {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-top: 80px;
+        }
+        
+        .nomor-surat {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+        
+        .detail-data {
+            margin-left: 50px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-data td {
+            padding: 5px 0;
+            vertical-align: top;
+        }
+        
+        .detail-data td:first-child {
+            width: 250px;
+        }
+        
+        .modal-lg {
+            max-width: 90%;
+        }
+        
+        .modal-xl {
+            max-width: 1200px;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .stats-card.total {
+            background: linear-gradient(135deg, #1a5f7a, #2a9d8f);
+        }
+        
+        .stats-card.puskesos {
+            background: linear-gradient(135deg, #118ab2, #06d6a0);
+        }
+        
+        .stats-card.sktm {
+            background: linear-gradient(135deg, #7209b7, #b5179e);
+        }
+        
+        .stats-card.month {
+            background: linear-gradient(135deg, #f48c06, #ff9100);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .search-box {
+            max-width: 300px;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #suratContainer, #suratContainer * {
+                visibility: visible;
+            }
+            #suratContainer {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+        
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--primary-color), #164e63);">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="https://via.placeholder.com/50x50/1a5f7a/ffffff?text=LOGO" alt="Logo Kabupaten Tegal" class="header-logo d-inline-block align-top">
+                <div>
+                    <div>PUSKESOS KECAMATAN MARGASARI</div>
+                    <div class="small">KABUPATEN TEGAL</div>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#tambahDataModal">
+                            <i class="fas fa-plus-circle"></i> Tambah Data
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="exportExcelBtn">
+                            <i class="fas fa-file-excel"></i> Ekspor Excel
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Data Summary Cards -->
+        <div class="row fade-in">
+            <div class="col-md-3">
+                <div class="stats-card total">
+                    <i class="fas fa-file-alt fa-2x"></i>
+                    <div class="stats-number" id="totalDataCount">0</div>
+                    <div>Total Data</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card puskesos">
+                    <i class="fas fa-hand-holding-heart fa-2x"></i>
+                    <div class="stats-number" id="puskesosCount">0</div>
+                    <div>PuskesosMgs</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card sktm">
+                    <i class="fas fa-file-contract fa-2x"></i>
+                    <div class="stats-number" id="sktmCount">0</div>
+                    <div>SKTM</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card month">
+                    <i class="fas fa-calendar-alt fa-2x"></i>
+                    <div class="stats-number" id="monthDataCount">0</div>
+                    <div>Bulan Ini</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card mt-4 fade-in">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-table"></i> Data Surat</h5>
+                <div class="d-flex gap-2">
+                    <div class="search-box">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Cari data...">
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-light" id="resetFilterBtn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>No. Surat</th>
+                                <th>Nama</th>
+                                <th>No. KK</th>
+                                <th>Desa</th>
+                                <th>Jenis Surat</th>
+                                <th>Tanggal Surat</th>
+                                <th>Pendamping</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="data-count">
+                        Menampilkan <span id="displayCount">0</span> dari <span id="totalCount">0</span> data
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary" id="prevBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="mx-2">Halaman <span id="currentPage">1</span> dari <span id="totalPages">1</span></span>
+                        <button class="btn btn-sm btn-outline-secondary" id="nextBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 Puskesos Kecamatan Margasari - Kabupaten Tegal.</p>
+            <p class="small">Sistem Manajemen Data Surat | Versi 1.0</p>
+        </div>
+    </footer>
+
+    <!-- Modal Tambah Data -->
+    <div class="modal fade" id="tambahDataModal" tabindex="-1" aria-labelledby="tambahDataModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tambahDataModalLabel">
+                        <i class="fas fa-plus-circle"></i> Tambah Data Baru
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="tambahDataForm">
+                    <div class="modal-body">
+                        <div class="form-section">
+                            <h6 class="form-section-title">
+                                <i class="fas fa-user-circle"></i> Data Pribadi
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nama" class="form-label required">Nama Lengkap</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="no_kk" class="form-label required">No. Kartu Keluarga (KK)</label>
+                                    <input type="text" class="form-control" id="no_kk" name="no_kk" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="no_ktp" class="form-label required">No. KTP</label>
+                                    <input type="text" class="form-control" id="no_ktp" name="no_ktp" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="tempat_lahir" class="form-label required">Tempat Lahir</label>
+                                    <select class="form-select" id="tempat_lahir" name="tempat_lahir" required>
+                                        <option value="">Pilih Tempat Lahir</option>
+                                        <option value="Tegal">Tegal</option>
+                                        <option value="Slawi">Slawi</option>
+                                        <option value="Brebes">Brebes</option>
+                                        <option value="Pemalang">Pemalang</option>
+                                        <option value="other">Lainnya</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3" id="customTempatLahirContainer" style="display: none;">
+                                    <label for="custom_tempat_lahir" class="form-label required">Tempat Lahir Lainnya</label>
+                                    <input type="text" class="form-control" id="custom_tempat_lahir" name="custom_tempat_lahir">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tanggal_lahir" class="form-label required">Tanggal Lahir</label>
+                                    <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="desa" class="form-label required">Desa</label>
+                                    <select class="form-select" id="desa" name="desa" required>
+                                        <option value="">Pilih Desa</option>
+                                        <option value="Danaraja">Danaraja</option>
+                                        <option value="Dukuh Tengah">Dukuh Tengah</option>
+                                        <option value="Jatilaba">Jatilaba</option>
+                                        <option value="Jembayat">Jembayat</option>
+                                        <option value="Kaligayam">Kaligayam</option>
+                                        <option value="Kalisalak">Kalisalak</option>
+                                        <option value="Karangdawa">Karangdawa</option>
+                                        <option value="Marga Ayu">Marga Ayu</option>
+                                        <option value="Margasari">Margasari</option>
+                                        <option value="Pakulaut">Pakulaut</option>
+                                        <option value="Prupuk Selatan">Prupuk Selatan</option>
+                                        <option value="Prupuk Utara">Prupuk Utara</option>
+                                        <option value="Wanasari">Wanasari</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="rt" class="form-label required">RT</label>
+                                    <select class="form-select" id="rt" name="rt" required>
+                                        <option value="">Pilih RT</option>
+                                        <!-- RT options akan diisi oleh JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="rw" class="form-label required">RW</label>
+                                    <select class="form-select" id="rw" name="rw" required>
+                                        <option value="">Pilih RW</option>
+                                        <!-- RW options akan diisi oleh JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="kecamatan" class="form-label required">Kecamatan</label>
+                                    <input type="text" class="form-control" id="kecamatan" name="kecamatan" value="Margasari" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="nama_pendamping" class="form-label required">Nama Pendamping</label>
+                                    <select class="form-select" id="nama_pendamping" name="nama_pendamping" required>
+                                        <option value="">Pilih Pendamping</option>
+                                        <!-- Options akan diisi oleh JavaScript -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h6 class="form-section-title">
+                                <i class="fas fa-file-alt"></i> Data Surat
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="tanggal_surat" class="form-label required">Tanggal Surat</label>
+                                    <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="jenis_surat" class="form-label required">Jenis Surat</label>
+                                    <select class="form-select" id="jenis_surat" name="jenis_surat" required>
+                                        <option value="">Pilih Jenis Surat</option>
+                                        <option value="PuskesosMgs">PuskesosMgs</option>
+                                        <option value="SKTM">SKTM</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Form tambahan untuk PuskesosMgs -->
+                            <div id="puskesosFields" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="jenis_bantuan" class="form-label required">Jenis Bantuan</label>
+                                        <select class="form-select" id="jenis_bantuan" name="jenis_bantuan">
+                                            <option value="">Pilih Jenis Bantuan</option>
+                                            <option value="PKH">PKH</option>
+                                            <option value="Sembako">Sembako</option>
+                                            <option value="PKH & Sembako">PKH & Sembako</option>
+                                            <option value="Yatim Piatu">Yatim Piatu</option>
+                                            <option value="BLTS Kesra">BLTS Kesra</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="triwulan" class="form-label required">Triwulan & Tahun</label>
+                                        <select class="form-select" id="triwulan" name="triwulan">
+                                            <option value="">Pilih Triwulan & Tahun</option>
+                                            <!-- Options akan diisi oleh JavaScript -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="no_rekening" class="form-label required">Nomor Rekening</label>
+                                        <input type="text" class="form-control" id="no_rekening" name="no_rekening">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Form tambahan untuk SKTM -->
+                            <div id="sktmFields" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="jenis_bantuan_sktm" class="form-label required">Jenis Bantuan SKTM</label>
+                                        <select class="form-select" id="jenis_bantuan_sktm" name="jenis_bantuan_sktm">
+                                            <option value="">Pilih Jenis Bantuan</option>
+                                            <option value="Bantuan LAZISMU">Bantuan LAZISMU</option>
+                                            <option value="Beasiswa KIP Kuliah">Beasiswa KIP Kuliah</option>
+                                            <option value="Pengajuan Alat Bantu Disabilitas">Pengajuan Alat Bantu Disabilitas</option>
+                                            <option value="Pengajuan Bantuan Hidup Layak bagi Lansia">Pengajuan Bantuan Hidup Layak bagi Lansia</option>
+                                            <option value="Pengajuan Bantuan perlengkapan sekolah">Pengajuan Bantuan perlengkapan sekolah</option>
+                                            <option value="Pengajuan Jampersal">Pengajuan Jampersal</option>
+                                            <option value="Pengajuan Keringanan Biaya Rumah Sakit / BTT">Pengajuan Keringanan Biaya Rumah Sakit / BTT</option>
+                                            <option value="Pengajuan KIS APBD / KASUISTIK">Pengajuan KIS APBD / KASUISTIK</option>
+                                            <option value="Pengajuan Panti Rehabilitasi Lansia">Pengajuan Panti Rehabilitasi Lansia</option>
+                                            <option value="Pengajuan Panti Rehabilitasi ODGJ">Pengajuan Panti Rehabilitasi ODGJ</option>
+                                            <option value="Pengajuan PIP / KIP">Pengajuan PIP / KIP</option>
+                                            <option value="Permohonan Reaktivasi BPJS PBI">Permohonan Reaktivasi BPJS PBI</option>
+                                            <option value="other">Lainnya</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row" id="customSktmContainer" style="display: none;">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="custom_sktm" class="form-label required">Jenis Bantuan Lainnya</label>
+                                        <input type="text" class="form-control" id="custom_sktm" name="custom_sktm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Batal
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Simpan Data
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lihat Detail -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">
+                        <i class="fas fa-info-circle"></i> Detail Data Surat
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nomor Surat:</strong> <span id="detailNoSurat"></span></p>
+                            <p><strong>Nama Lengkap:</strong> <span id="detailNama"></span></p>
+                            <p><strong>No. KK:</strong> <span id="detailNoKK"></span></p>
+                            <p><strong>No. KTP:</strong> <span id="detailNoKTP"></span></p>
+                            <p><strong>Tempat Lahir:</strong> <span id="detailTempatLahir"></span></p>
+                            <p><strong>Tanggal Lahir:</strong> <span id="detailTanggalLahir"></span></p>
+                            <p><strong>Alamat:</strong> <span id="detailAlamat"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Jenis Surat:</strong> <span id="detailJenisSurat"></span></p>
+                            <p><strong>Tanggal Surat:</strong> <span id="detailTanggalSurat"></span></p>
+                            <p><strong>Nama Pendamping:</strong> <span id="detailNamaPendamping"></span></p>
+                            <p><strong>NIP Pendamping:</strong> <span id="detailNIPPendamping"></span></p>
+                            <div id="detailBantuanContainer">
+                                <!-- Detail bantuan akan ditampilkan di sini -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                    <button type="button" class="btn btn-primary" id="cetakSuratBtn">
+                        <i class="fas fa-print"></i> Cetak Surat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Preview Surat -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">
+                        <i class="fas fa-eye"></i> Preview Surat
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="suratContainer">
+                        <!-- Surat akan ditampilkan di sini -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                    <button type="button" class="btn btn-success" id="downloadPdfBtn">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                    <button type="button" class="btn btn-primary" id="printSuratBtn">
+                        <i class="fas fa-print"></i> Print Surat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data pendamping
+        const pendampingData = [
+            { nama: "AHMAD FARADIS", nip: "199508292025211032" },
+            { nama: "AHMAD MUFLIKHUL AZKI", nip: "197407062025211036" },
+            { nama: "AKHMAD SEKHU", nip: "198507122025211079" },
+            { nama: "EKA RESTI MARDIOASIH", nip: "199103142025212064" },
+            { nama: "ESA ARY PRIYANTO", nip: "199311162025211047" },
+            { nama: "FATKHURAHMAN FAUZI", nip: "198904152025211079" },
+            { nama: "FITRIA APRILIA RAHMAH", nip: "-" },
+            { nama: "GHOSA KURNIA FISTIKA", nip: "199401182025212041" },
+            { nama: "HADIYAN APRIYANTO", nip: "198604152025211066" },
+            { nama: "INTAN NURUL HUSNAH", nip: "199011122025212058" },
+            { nama: "M. ABDUL AZIS", nip: "199207092025211060" },
+            { nama: "MOHAMAD IMRON", nip: "199008262025211039" },
+            { nama: "SUCI ROHMATIA FILZAH", nip: "-" },
+            { nama: "VIA ANISATUN NINGRUM", nip: "199702272025212047" }
+        ];
+
+        // Data desa di Kecamatan Margasari
+        const desaList = [
+            "Danaraja", "Dukuh Tengah", "Jatilaba", "Jembayat", 
+            "Kaligayam", "Kalisalak", "Karangdawa", "Marga Ayu", 
+            "Margasari", "Pakulaut", "Prupuk Selatan", "Prupuk Utara", "Wanasari"
+        ];
+
+        // Data yang disimpan di localStorage
+        let dataSurat = JSON.parse(localStorage.getItem('dataSurat')) || [];
+        
+        // Counter untuk nomor surat
+        let puskesosCounter = dataSurat.filter(item => item.jenis_surat === 'PuskesosMgs').length;
+        let sktmCounter = dataSurat.filter(item => item.jenis_surat === 'SKTM').length;
+        
+        // Pagination
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
+        // Inisialisasi aplikasi
+        document.addEventListener('DOMContentLoaded', function() {
+            initSelectOptions();
+            loadDataTable();
+            updateDataCount();
+            setupEventListeners();
+            setDefaultDates();
+        });
+        
+        // Inisialisasi opsi dropdown
+        function initSelectOptions() {
+            // Opsi pendamping
+            const pendampingSelect = document.getElementById('nama_pendamping');
+            pendampingData.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.nama;
+                option.textContent = `${p.nama}`;
+                pendampingSelect.appendChild(option);
+            });
+            
+            // Opsi triwulan
+            const triwulanSelect = document.getElementById('triwulan');
+            for (let year = 2025; year <= 2045; year++) {
+                for (let triwulan = 1; triwulan <= 4; triwulan++) {
+                    const option = document.createElement('option');
+                    option.value = `Triwulan ${triwulan} ${year}`;
+                    option.textContent = `Triwulan ${triwulan} ${year}`;
+                    triwulanSelect.appendChild(option);
+                }
+            }
+            
+            // Opsi RT (0-20)
+            const rtSelect = document.getElementById('rt');
+            for (let i = 0; i <= 20; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i === 0 ? "0" : `RT ${i}`;
+                rtSelect.appendChild(option);
+            }
+            
+            // Opsi RW (0-20)
+            const rwSelect = document.getElementById('rw');
+            for (let i = 0; i <= 20; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i === 0 ? "0" : `RW ${i}`;
+                rwSelect.appendChild(option);
+            }
+        }
+        
+        // Set tanggal default
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal_surat').value = today;
+            
+            // Set tanggal lahir default 20 tahun yang lalu
+            const twentyYearsAgo = new Date();
+            twentyYearsAgo.setFullYear(twentyYearsAgo.getFullYear() - 20);
+            document.getElementById('tanggal_lahir').value = twentyYearsAgo.toISOString().split('T')[0];
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tempat lahir custom
+            document.getElementById('tempat_lahir').addEventListener('change', function() {
+                const customContainer = document.getElementById('customTempatLahirContainer');
+                customContainer.style.display = this.value === 'other' ? 'block' : 'none';
+                if (this.value !== 'other') {
+                    document.getElementById('custom_tempat_lahir').value = '';
+                }
+            });
+            
+            // Jenis surat change
+            document.getElementById('jenis_surat').addEventListener('change', function() {
+                const puskesosFields = document.getElementById('puskesosFields');
+                const sktmFields = document.getElementById('sktmFields');
+                
+                if (this.value === 'PuskesosMgs') {
+                    puskesosFields.style.display = 'block';
+                    sktmFields.style.display = 'none';
+                    
+                    // Set required fields
+                    document.getElementById('jenis_bantuan').required = true;
+                    document.getElementById('triwulan').required = true;
+                    document.getElementById('no_rekening').required = true;
+                    
+                    document.getElementById('jenis_bantuan_sktm').required = false;
+                    document.getElementById('custom_sktm').required = false;
+                } else if (this.value === 'SKTM') {
+                    puskesosFields.style.display = 'none';
+                    sktmFields.style.display = 'block';
+                    
+                    // Set required fields
+                    document.getElementById('jenis_bantuan').required = false;
+                    document.getElementById('triwulan').required = false;
+                    document.getElementById('no_rekening').required = false;
+                    
+                    document.getElementById('jenis_bantuan_sktm').required = true;
+                } else {
+                    puskesosFields.style.display = 'none';
+                    sktmFields.style.display = 'none';
+                }
+            });
+            
+            // SKTM custom
+            document.getElementById('jenis_bantuan_sktm').addEventListener('change', function() {
+                const customContainer = document.getElementById('customSktmContainer');
+                customContainer.style.display = this.value === 'other' ? 'block' : 'none';
+                if (this.value !== 'other') {
+                    document.getElementById('custom_sktm').value = '';
+                }
+            });
+            
+            // Form submit
+            document.getElementById('tambahDataForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveData();
+            });
+            
+            // Export Excel
+            document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+            
+            // Search
+            document.getElementById('searchInput').addEventListener('input', function() {
+                currentPage = 1;
+                loadDataTable();
+            });
+            
+            // Reset filter
+            document.getElementById('resetFilterBtn').addEventListener('click', function() {
+                document.getElementById('searchInput').value = '';
+                currentPage = 1;
+                loadDataTable();
+            });
+            
+            // Pagination
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    loadDataTable();
+                }
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                const totalPages = Math.ceil(getFilteredData().length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadDataTable();
+                }
+            });
+            
+            // Cetak surat
+            document.getElementById('cetakSuratBtn').addEventListener('click', function() {
+                const selectedId = this.getAttribute('data-id');
+                showSuratPreview(selectedId);
+            });
+            
+            // Download PDF
+            document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+                const selectedId = this.getAttribute('data-id');
+                downloadPDF(selectedId);
+            });
+            
+            // Print Surat
+            document.getElementById('printSuratBtn').addEventListener('click', function() {
+                printSurat();
+            });
+        }
+        
+        // Simpan data baru
+        function saveData() {
+            // Validasi form
+            if (!validateForm()) return;
+            
+            // Ambil nilai dari form
+            const nama = document.getElementById('nama').value;
+            const no_kk = document.getElementById('no_kk').value;
+            const no_ktp = document.getElementById('no_ktp').value;
+            let tempat_lahir = document.getElementById('tempat_lahir').value;
+            const custom_tempat_lahir = document.getElementById('custom_tempat_lahir').value;
+            const tanggal_lahir = document.getElementById('tanggal_lahir').value;
+            const desa = document.getElementById('desa').value;
+            const rt = document.getElementById('rt').value;
+            const rw = document.getElementById('rw').value;
+            const kecamatan = document.getElementById('kecamatan').value;
+            const nama_pendamping = document.getElementById('nama_pendamping').value;
+            const tanggal_surat = document.getElementById('tanggal_surat').value;
+            const jenis_surat = document.getElementById('jenis_surat').value;
+            
+            // Format tanggal lahir
+            const formattedTanggalLahir = formatDate(tanggal_lahir);
+            
+            // Tempat lahir
+            if (tempat_lahir === 'other') {
+                tempat_lahir = custom_tempat_lahir;
+            }
+            
+            // Dapatkan NIP pendamping
+            const pendamping = pendampingData.find(p => p.nama === nama_pendamping);
+            const nip_pendamping = pendamping ? pendamping.nip : '-';
+            
+            // Generate nomor surat
+            let nomor_surat;
+            const tanggalSurat = new Date(tanggal_surat);
+            const bulan = tanggalSurat.getMonth() + 1; // 1-12
+            const tahun = tanggalSurat.getFullYear();
+            const bulanRomawi = convertToRoman(bulan);
+            
+            if (jenis_surat === 'PuskesosMgs') {
+                puskesosCounter++;
+                nomor_surat = `${puskesosCounter.toString().padStart(3, '0')}/PuskesosMgs/${bulanRomawi}/${tahun}`;
+            } else {
+                sktmCounter++;
+                nomor_surat = `${sktmCounter.toString().padStart(3, '0')}/SKTM/${bulanRomawi}/${tahun}`;
+            }
+            
+            // Data bantuan
+            let bantuan_data = {};
+            if (jenis_surat === 'PuskesosMgs') {
+                bantuan_data = {
+                    jenis_bantuan: document.getElementById('jenis_bantuan').value,
+                    triwulan: document.getElementById('triwulan').value,
+                    no_rekening: document.getElementById('no_rekening').value
+                };
+            } else {
+                let jenis_bantuan_sktm = document.getElementById('jenis_bantuan_sktm').value;
+                if (jenis_bantuan_sktm === 'other') {
+                    jenis_bantuan_sktm = document.getElementById('custom_sktm').value;
+                }
+                bantuan_data = {
+                    jenis_bantuan_sktm: jenis_bantuan_sktm
+                };
+            }
+            
+            // Buat objek data
+            const newData = {
+                id: Date.now(), // ID unik berdasarkan timestamp
+                nomor_surat,
+                nama,
+                no_kk,
+                no_ktp,
+                tempat_lahir,
+                tanggal_lahir: formattedTanggalLahir,
+                tanggal_lahir_raw: tanggal_lahir,
+                desa,
+                rt,
+                rw,
+                kecamatan,
+                nama_pendamping,
+                nip_pendamping,
+                tanggal_surat,
+                jenis_surat,
+                bantuan_data,
+                created_at: new Date().toISOString()
+            };
+            
+            // Tambahkan ke array
+            dataSurat.push(newData);
+            
+            // Simpan ke localStorage
+            localStorage.setItem('dataSurat', JSON.stringify(dataSurat));
+            
+            // Reset form
+            document.getElementById('tambahDataForm').reset();
+            
+            // Set kembali nilai default
+            document.getElementById('kecamatan').value = 'Margasari';
+            setDefaultDates();
+            
+            // Tutup modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('tambahDataModal'));
+            modal.hide();
+            
+            // Tampilkan notifikasi
+            showAlert('Data berhasil disimpan!', 'success');
+            
+            // Perbarui tampilan
+            loadDataTable();
+            updateDataCount();
+        }
+        
+        // Validasi form
+        function validateForm() {
+            const jenis_surat = document.getElementById('jenis_surat').value;
+            
+            if (jenis_surat === 'PuskesosMgs') {
+                const jenis_bantuan = document.getElementById('jenis_bantuan').value;
+                const triwulan = document.getElementById('triwulan').value;
+                const no_rekening = document.getElementById('no_rekening').value;
+                
+                if (!jenis_bantuan || !triwulan || !no_rekening) {
+                    showAlert('Harap isi semua field untuk jenis surat PuskesosMgs', 'warning');
+                    return false;
+                }
+            } else if (jenis_surat === 'SKTM') {
+                let jenis_bantuan_sktm = document.getElementById('jenis_bantuan_sktm').value;
+                
+                if (jenis_bantuan_sktm === 'other') {
+                    jenis_bantuan_sktm = document.getElementById('custom_sktm').value;
+                }
+                
+                if (!jenis_bantuan_sktm) {
+                    showAlert('Harap isi jenis bantuan SKTM', 'warning');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Tampilkan alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+            alertDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    <div>${message}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+        
+        // Format tanggal
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const months = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            
+            return `${day} ${month} ${year}`;
+        }
+        
+        // Konversi ke angka Romawi
+        function convertToRoman(num) {
+            const romanNumerals = [
+                '', 'I', 'II', 'III', 'IV', 'V', 'VI',
+                'VII', 'VIII', 'IX', 'X', 'XI', 'XII'
+            ];
+            return romanNumerals[num];
+        }
+        
+        // Load data ke tabel
+        function loadDataTable() {
+            const filteredData = getFilteredData();
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+            
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
+            
+            if (paginatedData.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-database fa-2x mb-3 text-muted"></i>
+                            <p class="text-muted">Tidak ada data ditemukan</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                paginatedData.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    // Badge untuk jenis surat
+                    const badgeClass = item.jenis_surat === 'PuskesosMgs' ? 'badge-puskesos' : 'badge-sktm';
+                    const badgeText = item.jenis_surat === 'PuskesosMgs' ? 'PuskesosMgs' : 'SKTM';
+                    
+                    row.innerHTML = `
+                        <td><strong>${item.nomor_surat}</strong></td>
+                        <td>${item.nama}</td>
+                        <td>${item.no_kk}</td>
+                        <td>${item.desa}</td>
+                        <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+                        <td>${formatDate(item.tanggal_surat)}</td>
+                        <td>${item.nama_pendamping}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-info" onclick="viewDetail(${item.id})" title="Lihat Detail">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-warning" onclick="editData(${item.id})" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteData(${item.id})" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Update pagination info
+            updatePaginationInfo(filteredData.length);
+        }
+        
+        // Get filtered data based on search
+        function getFilteredData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                return dataSurat;
+            }
+            
+            return dataSurat.filter(item => {
+                return (
+                    item.nama.toLowerCase().includes(searchTerm) ||
+                    item.no_kk.includes(searchTerm) ||
+                    item.no_ktp.includes(searchTerm) ||
+                    item.nomor_surat.toLowerCase().includes(searchTerm) ||
+                    item.jenis_surat.toLowerCase().includes(searchTerm) ||
+                    item.nama_pendamping.toLowerCase().includes(searchTerm) ||
+                    item.desa.toLowerCase().includes(searchTerm)
+                );
+            });
+        }
+        
+        // Update pagination info
+        function updatePaginationInfo(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(startIndex + itemsPerPage - 1, totalItems);
+            
+            document.getElementById('displayCount').textContent = 
+                totalItems > 0 ? `${startIndex}-${endIndex}` : '0';
+            document.getElementById('totalCount').textContent = totalItems;
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = totalPages;
+            
+            // Enable/disable pagination buttons
+            document.getElementById('prevBtn').disabled = currentPage <= 1;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        }
+        
+        // Update data count
+        function updateDataCount() {
+            const totalData = dataSurat.length;
+            const puskesosData = dataSurat.filter(item => item.jenis_surat === 'PuskesosMgs').length;
+            const sktmData = dataSurat.filter(item => item.jenis_surat === 'SKTM').length;
+            
+            // Data bulan ini
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            const monthData = dataSurat.filter(item => {
+                const itemDate = new Date(item.created_at);
+                return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
+            }).length;
+            
+            document.getElementById('totalDataCount').textContent = totalData;
+            document.getElementById('puskesosCount').textContent = puskesosData;
+            document.getElementById('sktmCount').textContent = sktmData;
+            document.getElementById('monthDataCount').textContent = monthData;
+        }
+        
+        // View detail data
+        function viewDetail(id) {
+            const item = dataSurat.find(d => d.id === id);
+            if (!item) return;
+            
+            // Set detail data
+            document.getElementById('detailNoSurat').textContent = item.nomor_surat;
+            document.getElementById('detailNama').textContent = item.nama;
+            document.getElementById('detailNoKK').textContent = item.no_kk;
+            document.getElementById('detailNoKTP').textContent = item.no_ktp;
+            document.getElementById('detailTempatLahir').textContent = item.tempat_lahir;
+            document.getElementById('detailTanggalLahir').textContent = item.tanggal_lahir;
+            document.getElementById('detailAlamat').textContent = `${item.desa}, RT ${item.rt}/RW ${item.rw}, Kec. ${item.kecamatan}`;
+            document.getElementById('detailJenisSurat').textContent = item.jenis_surat;
+            document.getElementById('detailTanggalSurat').textContent = formatDate(item.tanggal_surat);
+            document.getElementById('detailNamaPendamping').textContent = item.nama_pendamping;
+            document.getElementById('detailNIPPendamping').textContent = item.nip_pendamping;
+            
+            // Set detail bantuan
+            const bantuanContainer = document.getElementById('detailBantuanContainer');
+            bantuanContainer.innerHTML = '';
+            
+            if (item.jenis_surat === 'PuskesosMgs') {
+                bantuanContainer.innerHTML = `
+                    <p><strong>Jenis Bantuan:</strong> ${item.bantuan_data.jenis_bantuan}</p>
+                    <p><strong>Triwulan:</strong> ${item.bantuan_data.triwulan}</p>
+                    <p><strong>No. Rekening:</strong> ${item.bantuan_data.no_rekening}</p>
+                `;
+            } else {
+                bantuanContainer.innerHTML = `
+                    <p><strong>Jenis Bantuan SKTM:</strong> ${item.bantuan_data.jenis_bantuan_sktm}</p>
+                `;
+            }
+            
+            // Set id untuk tombol cetak
+            document.getElementById('cetakSuratBtn').setAttribute('data-id', id);
+            
+            // Show modal
+            const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+            detailModal.show();
+        }
+        
+        // Edit data
+        function editData(id) {
+            // Implementasi edit data
+            const item = dataSurat.find(d => d.id === id);
+            if (!item) return;
+            
+            // Isi form dengan data yang ada
+            document.getElementById('nama').value = item.nama;
+            document.getElementById('no_kk').value = item.no_kk;
+            document.getElementById('no_ktp').value = item.no_ktp;
+            document.getElementById('tempat_lahir').value = item.tempat_lahir;
+            document.getElementById('tanggal_lahir').value = item.tanggal_lahir_raw;
+            document.getElementById('desa').value = item.desa;
+            document.getElementById('rt').value = item.rt;
+            document.getElementById('rw').value = item.rw;
+            document.getElementById('nama_pendamping').value = item.nama_pendamping;
+            document.getElementById('tanggal_surat').value = item.tanggal_surat;
+            document.getElementById('jenis_surat').value = item.jenis_surat;
+            
+            // Trigger change event untuk menampilkan field yang sesuai
+            document.getElementById('jenis_surat').dispatchEvent(new Event('change'));
+            
+            if (item.jenis_surat === 'PuskesosMgs') {
+                document.getElementById('jenis_bantuan').value = item.bantuan_data.jenis_bantuan;
+                document.getElementById('triwulan').value = item.bantuan_data.triwulan;
+                document.getElementById('no_rekening').value = item.bantuan_data.no_rekening;
+            } else {
+                document.getElementById('jenis_bantuan_sktm').value = item.bantuan_data.jenis_bantuan_sktm;
+            }
+            
+            // Hapus data lama
+            dataSurat = dataSurat.filter(d => d.id !== id);
+            
+            // Tampilkan modal
+            const modal = new bootstrap.Modal(document.getElementById('tambahDataModal'));
+            modal.show();
+            
+            showAlert('Data siap diedit. Silakan perbarui data yang diperlukan.', 'info');
+        }
+        
+        // Delete data
+        function deleteData(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                dataSurat = dataSurat.filter(item => item.id !== id);
+                localStorage.setItem('dataSurat', JSON.stringify(dataSurat));
+                loadDataTable();
+                updateDataCount();
+                showAlert('Data berhasil dihapus!', 'success');
+            }
+        }
+        
+        // Show surat preview dengan format yang sesuai
+        function showSuratPreview(id) {
+            const item = dataSurat.find(d => d.id === id);
+            if (!item) return;
+            
+            const suratContainer = document.getElementById('suratContainer');
+            suratContainer.innerHTML = '';
+            
+            if (item.jenis_surat === 'PuskesosMgs') {
+                // Template surat PuskesosMgs sesuai format Google Docs
+                const suratHTML = `
+                    <div class="surat-preview" id="suratContent">
+                        <!-- Kop Surat -->
+                        <div class="kop-surat">
+                            <div style="font-size: 16pt; font-weight: bold; margin-bottom: 5px;">PEMERINTAH KABUPATEN TEGAL</div>
+                            <div style="font-size: 16pt; font-weight: bold; margin-bottom: 5px;">DINAS SOSIAL</div>
+                            <div style="font-size: 14pt; font-weight: bold; margin-bottom: 5px;">PUSAT KESEJAHTERAAN SOSIAL</div>
+                            <div style="font-size: 14pt; font-weight: bold; margin-bottom: 10px;">KECAMATAN MARGASARI</div>
+                            <div style="font-size: 11pt;">Alamat: Jalan Raya Margasari No. 123 Telp. (0283) 123456</div>
+                            <div style="font-size: 11pt;">Email: puskesos.margasari@tegal.go.id</div>
+                            <hr style="border: 2px solid #000; margin: 15px 0;">
+                        </div>
+                        
+                        <!-- Nomor Surat -->
+                        <div class="nomor-surat" style="font-size: 12pt;">
+                            <div style="margin-bottom: 5px;">Nomor : <strong>${item.nomor_surat}</strong></div>
+                            <div>Lampiran : -</div>
+                            <div>Perihal : <strong>Surat Keterangan Penerima Bantuan Sosial</strong></div>
+                        </div>
+                        
+                        <!-- Tujuan Surat -->
+                        <div style="margin-top: 40px; font-size: 12pt;">
+                            <div>Kepada Yth.</div>
+                            <div style="margin-left: 40px; margin-top: 10px;">
+                                <div>Direktur Utama</div>
+                                <div>Bank BRI KC Tegal</div>
+                                <div>di</div>
+                                <div style="margin-bottom: 20px;">Tempat</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pembuka Surat -->
+                        <div style="margin-top: 20px; text-align: justify; font-size: 12pt; line-height: 1.8;">
+                            <p>Dengan hormat,</p>
+                            <p style="text-indent: 50px;">
+                                Bersama ini kami sampaikan bahwa berdasarkan data yang tercatat pada Dinas Sosial Kabupaten Tegal,
+                                nama di bawah ini adalah benar penerima bantuan sosial dari Pemerintah Kabupaten Tegal melalui
+                                Puskesos Kecamatan Margasari.
+                            </p>
+                        </div>
+                        
+                        <!-- Data Penerima -->
+                        <div style="margin-top: 30px; margin-left: 60px; font-size: 12pt;">
+                            <table style="border-collapse: collapse; width: 100%;">
+                                <tr>
+                                    <td style="width: 250px; padding: 8px 0; vertical-align: top;">Nama Lengkap</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.nama}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">No. KTP</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.no_ktp}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">No. Kartu Keluarga</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.no_kk}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">Tempat/Tgl. Lahir</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.tempat_lahir}, ${item.tanggal_lahir}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">Alamat</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.desa}, RT ${item.rt}/RW ${item.rw}, Kec. ${item.kecamatan}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">Jenis Bantuan</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.bantuan_data.jenis_bantuan}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">Periode Bantuan</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.bantuan_data.triwulan}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">No. Rekening</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.bantuan_data.no_rekening}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- Penutup Surat -->
+                        <div style="margin-top: 40px; text-align: justify; font-size: 12pt; line-height: 1.8;">
+                            <p style="text-indent: 50px;">
+                                Demikian surat keterangan ini kami buat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.
+                                Atas perhatian dan kerjasamanya, kami ucapkan terima kasih.
+                            </p>
+                        </div>
+                        
+                        <!-- Tanda Tangan -->
+                        <div class="ttd-section">
+                            <div style="text-align: center;">
+                                <div>Kabupaten Tegal, ${formatDate(item.tanggal_surat)}</div>
+                                <div style="margin-top: 100px; font-weight: bold; text-decoration: underline; font-size: 13pt;">${item.nama_pendamping}</div>
+                                <div style="font-size: 11pt;">NIP. ${item.nip_pendamping}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tembusan -->
+                        <div style="margin-top: 60px; font-size: 11pt;">
+                            <div><strong>Tembusan:</strong></div>
+                            <div style="margin-left: 20px;">
+                                <div>1. Kepala Dinas Sosial Kabupaten Tegal</div>
+                                <div>2. Arsip</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                suratContainer.innerHTML = suratHTML;
+            } else {
+                // Template surat SKTM
+                const suratHTML = `
+                    <div class="surat-preview" id="suratContent">
+                        <!-- Kop Surat -->
+                        <div class="kop-surat">
+                            <div style="font-size: 16pt; font-weight: bold; margin-bottom: 5px;">PEMERINTAH KABUPATEN TEGAL</div>
+                            <div style="font-size: 16pt; font-weight: bold; margin-bottom: 5px;">DINAS SOSIAL</div>
+                            <div style="font-size: 14pt; font-weight: bold; margin-bottom: 5px;">PUSAT KESEJAHTERAAN SOSIAL</div>
+                            <div style="font-size: 14pt; font-weight: bold; margin-bottom: 10px;">KECAMATAN MARGASARI</div>
+                            <div style="font-size: 11pt;">Alamat: Jalan Raya Margasari No. 123 Telp. (0283) 123456</div>
+                            <div style="font-size: 11pt;">Email: puskesos.margasari@tegal.go.id</div>
+                            <hr style="border: 2px solid #000; margin: 15px 0;">
+                        </div>
+                        
+                        <!-- Nomor Surat -->
+                        <div class="nomor-surat" style="font-size: 12pt;">
+                            <div style="margin-bottom: 5px;">Nomor : <strong>${item.nomor_surat}</strong></div>
+                            <div>Lampiran : -</div>
+                            <div>Perihal : <strong>Surat Keterangan Tidak Mampu (SKTM)</strong></div>
+                        </div>
+                        
+                        <!-- Tujuan Surat -->
+                        <div style="margin-top: 40px; font-size: 12pt;">
+                            <div>Kepada Yth.</div>
+                            <div style="margin-left: 40px; margin-top: 10px;">
+                                <div>Pimpinan Instansi Terkait</div>
+                                <div>di</div>
+                                <div style="margin-bottom: 20px;">Tempat</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pembuka Surat -->
+                        <div style="margin-top: 20px; text-align: justify; font-size: 12pt; line-height: 1.8;">
+                            <p>Dengan hormat,</p>
+                            <p style="text-indent: 50px;">
+                                Bersama ini kami sampaikan bahwa berdasarkan data yang tercatat pada Dinas Sosial Kabupaten Tegal,
+                                nama di bawah ini adalah benar warga kurang mampu yang berdomisili di wilayah Kecamatan Margasari
+                                dan memerlukan bantuan:
+                                <strong>${item.bantuan_data.jenis_bantuan_sktm}</strong>
+                            </p>
+                        </div>
+                        
+                        <!-- Data Penerima -->
+                        <div style="margin-top: 30px; margin-left: 60px; font-size: 12pt;">
+                            <table style="border-collapse: collapse; width: 100%;">
+                                <tr>
+                                    <td style="width: 250px; padding: 8px 0; vertical-align: top;">Nama Lengkap</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.nama}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">No. KTP</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.no_ktp}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">No. Kartu Keluarga</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.no_kk}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">Tempat/Tgl. Lahir</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.tempat_lahir}, ${item.tanggal_lahir}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">Alamat</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.desa}, RT ${item.rt}/RW ${item.rw}, Kec. ${item.kecamatan}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; vertical-align: top;">Keperluan</td>
+                                    <td style="padding: 8px 0; vertical-align: top;">: ${item.bantuan_data.jenis_bantuan_sktm}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- Penutup Surat -->
+                        <div style="margin-top: 40px; text-align: justify; font-size: 12pt; line-height: 1.8;">
+                            <p style="text-indent: 50px;">
+                                Demikian surat keterangan tidak mampu ini kami buat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.
+                                Atas perhatian dan kerjasamanya, kami ucapkan terima kasih.
+                            </p>
+                        </div>
+                        
+                        <!-- Tanda Tangan -->
+                        <div class="ttd-section">
+                            <div style="text-align: center;">
+                                <div>Kabupaten Tegal, ${formatDate(item.tanggal_surat)}</div>
+                                <div style="margin-top: 100px; font-weight: bold; text-decoration: underline; font-size: 13pt;">${item.nama_pendamping}</div>
+                                <div style="font-size: 11pt;">NIP. ${item.nip_pendamping}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tembusan -->
+                        <div style="margin-top: 60px; font-size: 11pt;">
+                            <div><strong>Tembusan:</strong></div>
+                            <div style="margin-left: 20px;">
+                                <div>1. Kepala Dinas Sosial Kabupaten Tegal</div>
+                                <div>2. Arsip</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                suratContainer.innerHTML = suratHTML;
+            }
+            
+            // Set id untuk tombol download dan print
+            document.getElementById('downloadPdfBtn').setAttribute('data-id', id);
+            document.getElementById('printSuratBtn').setAttribute('data-id', id);
+            
+            // Show modal
+            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            previewModal.show();
+        }
+        
+        // Download PDF dengan html2canvas dan jsPDF
+        function downloadPDF(id) {
+            const item = dataSurat.find(d => d.id === id);
+            if (!item) return;
+            
+            // Tampilkan loading
+            showAlert('Sedang membuat PDF, harap tunggu...', 'info');
+            
+            // Buat elemen surat untuk konversi
+            const suratContent = document.getElementById('suratContent');
+            
+            // Konversi ke canvas menggunakan html2canvas
+            html2canvas(suratContent, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                // Buat PDF dari canvas
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const pdf = new jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`${item.nomor_surat.replace(/\//g, '-')}.pdf`);
+                
+                showAlert('PDF berhasil diunduh!', 'success');
+            }).catch(error => {
+                console.error('Error generating PDF:', error);
+                showAlert('Gagal membuat PDF. Silakan coba lagi.', 'danger');
+            });
+        }
+        
+        // Print surat langsung
+        function printSurat() {
+            const suratContent = document.getElementById('suratContent');
+            const printWindow = window.open('', '_blank');
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Cetak Surat</title>
+                    <style>
+                        body {
+                            font-family: 'Times New Roman', serif;
+                            margin: 0;
+                            padding: 20px;
+                        }
+                        @media print {
+                            @page {
+                                margin: 20mm;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${suratContent.innerHTML}
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.focus();
+            
+            // Tunggu sebentar sebelum print
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+        
+        // Export to Excel
+        function exportToExcel() {
+            if (dataSurat.length === 0) {
+                showAlert('Tidak ada data untuk diekspor!', 'warning');
+                return;
+            }
+            
+            // Prepare data for export
+            const exportData = dataSurat.map(item => {
+                const row = {
+                    'No. Surat': item.nomor_surat,
+                    'Nama': item.nama,
+                    'No. KK': item.no_kk,
+                    'No. KTP': item.no_ktp,
+                    'Tempat Lahir': item.tempat_lahir,
+                    'Tanggal Lahir': item.tanggal_lahir,
+                    'Desa': item.desa,
+                    'RT': item.rt,
+                    'RW': item.rw,
+                    'Kecamatan': item.kecamatan,
+                    'Jenis Surat': item.jenis_surat,
+                    'Tanggal Surat': formatDate(item.tanggal_surat),
+                    'Nama Pendamping': item.nama_pendamping,
+                    'NIP Pendamping': item.nip_pendamping,
+                    'Dibuat Pada': formatDate(item.created_at)
+                };
+                
+                // Add bantuan data based on jenis surat
+                if (item.jenis_surat === 'PuskesosMgs') {
+                    row['Jenis Bantuan'] = item.bantuan_data.jenis_bantuan;
+                    row['Triwulan'] = item.bantuan_data.triwulan;
+                    row['No. Rekening'] = item.bantuan_data.no_rekening;
+                } else {
+                    row['Jenis Bantuan SKTM'] = item.bantuan_data.jenis_bantuan_sktm;
+                }
+                
+                return row;
+            });
+            
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Surat');
+            
+            // Generate file name
+            const fileName = `Data_Surat_Puskesos_Margasari_${new Date().toISOString().split('T')[0]}.xlsx`;
+            
+            // Save to file
+            XLSX.writeFile(wb, fileName);
+            
+            showAlert('Data berhasil diekspor ke Excel!', 'success');
+        }
+    </script>
+</body>
+</html>
